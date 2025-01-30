@@ -1,7 +1,8 @@
 
 -- 290125
--- Sailor DB.
+-- 1a) Sailor DB.
 
+-- Creating tables.
 CREATE TABLE IF NOT EXISTS Sailor(
 	sid int primary key,
 	sname varchar(15),
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS Reserves(
 	foreign key(bid) references Boats(bid) on update cascade on delete set null
 );
 
+-- Inserting values.
 INSERT INTO Sailor VALUES
 (1, 'Ajay', 4.7, 27),
 (2, 'Bharath', 4.5, 24),
@@ -42,10 +44,12 @@ INSERT INTO Reserves VALUES
 (2, 303, 'Thursday'),
 (1, 101, 'Friday');
 
+-- Displaying tables.
 SELECT * FROM Sailor;
 SELECT * FROM Boats;
 SELECT * FROM Reserves;
 
+-- QUERIES.
 
 --Query 1 : Finding sailors who have reserved atleast one boat.
 SELECT sid, sname FROM Sailor
@@ -58,10 +62,6 @@ SELECT sid, sname FROM Sailor
 			where bid in (SELECT bid FROM Boats where color = 'Red' or color = 'Green')
 	) order by sid;
 
-
-
-SELECT * FROM Boats; 
-
---Query 3 : Funding the sid of sailors who have not reserved a boat.
+--Query 3 : Finding the sid of sailors who have not reserved a boat.
 SELECT sid, sname FROM Sailor
 	where sid not in (SELECT (sid) FROM Reserves);
