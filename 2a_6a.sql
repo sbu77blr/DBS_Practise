@@ -1,7 +1,8 @@
 
 -- 300125
--- 2a) : Employee DB
+-- 2a) & 6a) : Employee DB
 
+-- Creating tables.
 CREATE TABLE IF NOT EXISTS Employee(
 	Fname varchar(10),
 	Lname varchar(10),
@@ -56,7 +57,7 @@ alter table Project ADD constraint FK_Dnum foreign key(Dnum) references Departme
 alter table Works_On add constraint FK_ESSN foreign key(ESSN) references Employee(SSN) on update cascade on delete set null;
 alter table Works_On Add constraint FK_Pno foreign key(Pno) references Project(Pno) on update cascade on delete set null;
 
--- Inserting Values.......
+-- Inserting Values
 
 insert into Employee values 
 ('Sy', 'R', 101, 'Blr', 'F', 50000, 100, 1),
@@ -82,10 +83,14 @@ insert into Works_On values
 (400, 5, 4),(401, 5, 5),
 (500, 6, 4),(501, 6, 4);
 
+-- Displaying the tables.
 select * from Department;
 select * from Employee;
 select * from Project;
 select * from Works_On;
+
+
+-- QUERIES.
 
 --Query 1 : To get names of all employees whose salary is > salary of all the employees of dept 5.
 select concat(fname, ' ', lname) as "Emp Name" from Employee 
@@ -102,3 +107,42 @@ select ESSN from Works_On
 select Pno,sum(hours) from Works_On group by Pno;
 	
 
+-- 6a Queries :
+
+-- Creating a Dependents table.
+CREATE TABLE IF NOT EXISTS Dependents (
+	Dno int, ESSN int,
+  	foreign key(Dno) references Department(Dnumber) on update cascade on delete set null,
+	foreign key(ESSN) references Employee(SSN) on update cascade on delete set null
+);
+
+-- Inserting values.
+
+insert into Dependents values
+(4, 401),
+(3, 300),
+(1, 101),
+(5, 500),
+(2, 201);
+
+-- ALTERNATIVELY, if wanted ... 
+-- -- Making Dname as both UNIQUE and NOT NULL, so as to reference it as a foreign key in Dependent table.
+-- alter table Dept add constraint Uniq_Dname unique(Dname);
+-- alter table Dept alter column Dname set not null;
+
+-- alter table Dept add constraint FK_Dname foreign key(Dname) references Dept(Dname);
+
+
+-- Query 1 : To find the average salary of all employees under each dept.
+select Dname, avg(salary) from Department dept, Employee emp 
+	where emp.Dno = dept.Dnumber group by Dname;
+
+-- Query 2 : To List the names of managers w/ atleast one dependent.
+select SSN, concat(Fname, ' ', Lname) as 'Emp Name' from Employee 
+where SSN in
+  (select ESSN from Dependents where ESSN in 
+    (select MgrSSN from Department)
+	);
+
+-- Query 3 : To get details of all depts having 'tech' as a substring in their name.
+select * from Department where Dname LIKE '%tech%';
